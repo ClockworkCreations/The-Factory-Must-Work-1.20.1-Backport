@@ -7,17 +7,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Same confirmed bug pattern found across a deep search of TFMG block
- * entities that both expose a fluid capability and mutate their own tank
- * internally without ever calling invalidateCapabilities().
- *
- * CastingBasinBlockEntity.tick() calls tank.setFluid(FluidStack.EMPTY)
- * when a recipe finishes, but never invalidates -- a pipe that cached
- * "tank full" never learns it emptied again, matching "casting basin
- * stops accepting input after the first recipe."
- *
- * Runs unconditionally at HEAD of tick() rather than TAIL, since tick()
- * has multiple early returns.
+ * CastingBasinBlockEntity.tick() empties its tank when a recipe
+ * finishes but never invalidates capabilities, so a pipe that cached
+ * "tank full" never learns it emptied -- a casting basin stops
+ * accepting input after the first recipe. Runs at HEAD, not TAIL, since
+ * tick() has multiple early returns.
  */
 @Mixin(CastingBasinBlockEntity.class)
 public abstract class CastingBasinBlockEntityCapabilityFixMixin {

@@ -10,12 +10,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-/**
- * Dist.CLIENT-scoped so this class (and the client-only rendering types it
- * imports, like BlockEntityRenderer) is never loaded at all on a dedicated
- * server -- registering a block entity renderer is inherently a
- * client-only concern.
- */
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class TFMGTweaksClient {
 

@@ -5,23 +5,12 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
- * See VatBlockEntityCapabilityFixMixin for the full explanation. Same idea
- * as VatInputOnlyItemWrapper but for fluids: reports both tanks (so
- * goggles/JEI-style queries can still see input contents), but fill()
- * only ever writes to input and drain() only ever reads from output --
- * fully symmetric isolation, not just fill() restricted.
- *
- * Without this, an external pump can fill the vat's output tank directly
- * once input is full (the original bug this class already fixed), and
- * separately, a naive combined-handler drain() search across BOTH tanks
- * together is exactly the same root-cause shape that caused Steam to be
- * rejected on the pump jack whenever oil/waste was also present in one
- * shared handler there -- reported as the vat's output fluid not being
- * extractable even with a filter configured for it, no matter how many
- * times the multiblock was rebuilt (ruling out a multiblock-state
- * staleness cause, since rebuilding didn't help). Isolating drain() to
- * output only, the same way fill() is already isolated to input only,
- * closes that off entirely.
+ * Same idea as VatInputOnlyItemWrapper but for fluids (see
+ * VatBlockEntityCapabilityFixMixin): reports both tanks combined, but
+ * fill() only writes to input and drain() only reads from output --
+ * fully symmetric isolation. Without the drain() isolation, a naive
+ * combined-handler search across both tanks together could reject
+ * extraction whenever the other tank also held fluid.
  */
 public class VatInputOnlyFluidWrapper implements IFluidHandler {
 

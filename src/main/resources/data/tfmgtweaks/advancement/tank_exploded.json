@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "tfmg:steel_fluid_tank"
+    },
+    "title": {
+      "translate": "advancements.tfmgtweaks.tank_exploded.title"
+    },
+    "description": {
+      "translate": "advancements.tfmgtweaks.tank_exploded.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "exploded": {
+      "trigger": "tfmgtweaks:tank_exploded"
+    }
+  }
+}

@@ -10,18 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 
 /**
- * Same bug pattern as CastingBasinBlockEntityCapabilityFixMixin. Directly
- * matches a reported bug: "Distillation Tower output stops --
- * distillation outputs occasionally stop pulling/pushing fluid until the
- * controller is broken+replaced or the multiblock reformed."
- *
- * manageRecipe() has two mutation points, neither invalidated:
- *  1. tank.drain() -- this controller's own input tank.
- *  2. output.tank.fill() -- for each DistillationOutputBlockEntity in
- *     getOutputs(), a separate block entity per output.
- *
- * Both are invalidated here, individually per output, since a pipe could
- * be connected to any one of them.
+ * Same pattern as CastingBasinBlockEntityCapabilityFixMixin: distillation
+ * outputs occasionally stop pulling/pushing fluid until reformed, since
+ * manageRecipe() drains its own tank and fills each output's tank
+ * without invalidating either. Both invalidated here, per output, since
+ * a pipe could be connected to any one of them.
  */
 @Mixin(DistillationControllerBlockEntity.class)
 public abstract class DistillationControllerBlockEntityCapabilityFixMixin {

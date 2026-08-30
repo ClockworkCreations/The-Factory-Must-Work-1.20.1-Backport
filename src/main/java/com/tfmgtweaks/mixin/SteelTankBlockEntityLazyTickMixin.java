@@ -7,18 +7,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * A distillation tower stops detecting heat after a world/chunk reload
- * (and visually reverts to a plain tank), staying broken until the tank
- * block is replaced.
- *
- * Root cause: lazyTick only calls updateTemperature() when
- * isDistillationTower is true, but that flag is only recomputed by
- * updateBoilerState(), which is only called from block-place /
- * neighbor-changed handlers -- never fired by a plain world load.
- *
- * Fix: call updateBoilerState() from lazyTick() too (already safe to
- * call on every segment), so state self-corrects periodically instead
- * of depending entirely on events that don't fire on load.
+ * A distillation tower stops detecting heat after a reload, since
+ * lazyTick only calls updateTemperature() when isDistillationTower is
+ * true, but that flag is only recomputed by updateBoilerState(), never
+ * fired by a plain world load. Calls updateBoilerState() from lazyTick()
+ * too, so state self-corrects periodically.
  */
 @Mixin(SteelTankBlockEntity.class)
 public abstract class SteelTankBlockEntityLazyTickMixin {

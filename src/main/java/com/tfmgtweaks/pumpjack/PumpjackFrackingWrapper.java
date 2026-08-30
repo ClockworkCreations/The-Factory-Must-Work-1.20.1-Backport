@@ -2,6 +2,7 @@ package com.tfmgtweaks.pumpjack;
 
 import com.drmangotea.tfmg.content.machinery.oil_processing.pumpjack.base.PumpjackBaseBlockEntity;
 import com.simibubi.create.content.fluids.FluidPropagator;
+import com.tfmgtweaks.TFMGTweaks;
 import com.tfmgtweaks.config.TFMGTweaksConfig;
 import com.tfmgtweaks.content.oilrock.OilRockBlockEntity;
 import com.tfmgtweaks.registry.TFMGTweaksFluids;
@@ -42,6 +43,9 @@ public class PumpjackFrackingWrapper {
 
     public int wasteAmount = 0;
     public int steamAmount = 0;
+
+    /** Whether wasteAmount has ever gone from empty to non-empty -- same one-time-only reasoning as hasEverHadOil elsewhere. */
+    private boolean hasEverHadWaste = false;
 
     /** Per-face role assignment; absent means NONE. */
     private final Map<Direction, FaceRole> faceRoles = new EnumMap<>(Direction.class);
@@ -192,10 +196,14 @@ public class PumpjackFrackingWrapper {
         }
         int wasteProduced = steamConsumed / 2;
         oilRock.addFrackingProgress(steamConsumed);
+        boolean wasteWasEmpty = wasteAmount <= 0;
         wasteAmount += wasteProduced;
         steamAmount -= steamConsumed;
         pumpjack.setChanged();
-        invalidate();
+        if (!hasEverHadWaste && wasteWasEmpty && wasteAmount > 0) {
+            hasEverHadWaste = true;
+            invalidate();
+        }
     }
 
     private void invalidate() {
@@ -266,12 +274,20 @@ public class PumpjackFrackingWrapper {
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            return oilTank.drain(resource, action);
+            FluidStack result = oilTank.drain(resource, action);
+            TFMGTweaks.LOGGER.info(
+                    "[diagnostic][PumpjackFrackingWrapper] OilOnlyView.drain(resource={}, action={}) -> {}",
+                    resource, action, result);
+            return result;
         }
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            return oilTank.drain(maxDrain, action);
+            FluidStack result = oilTank.drain(maxDrain, action);
+            TFMGTweaks.LOGGER.info(
+                    "[diagnostic][PumpjackFrackingWrapper] OilOnlyView.drain(maxDrain={}, action={}) -> {}",
+                    maxDrain, action, result);
+            return result;
         }
     }
 
@@ -324,7 +340,6 @@ public class PumpjackFrackingWrapper {
             if (action.execute()) {
                 wasteAmount -= amount;
                 pumpjack.setChanged();
-                invalidate();
             }
             return new FluidStack(getWasteFluid(), amount);
         }

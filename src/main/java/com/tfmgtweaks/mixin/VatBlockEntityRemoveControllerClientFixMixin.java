@@ -9,33 +9,14 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * Follow-up to VatMixedTypeConnectivityFixMixin: that fix calls
- * ConnectivityHandler.splitMulti() on detecting mismatched vat types,
- * which resolves to VatBlockEntity's own removeController() for the
- * actual split. Confirmed by reading it directly: removeController()'s
- * very first line is `if (level.isClientSide) return;` -- meaning it is
- * a complete no-op on the client, not just skipping some server-only
- * bookkeeping. Not even controller/width/height get reset there.
- *
- * Since TFMG's own multiblock formation (VatBlock.onPlace() ->
- * updateConnectivity()) runs independently on both sides with no
- * client-side guard of its own, the client computes its own copy of the
- * (wrong, merged) structure and renders it -- and our earlier fix's
- * splitMulti() call, while fully correct server-side, has zero effect
- * on that client-side copy. Reported symptom ("still try to connect")
- * is exactly this: the server's logical state is fine, but the client's
- * own visual state is never corrected.
- *
- * Fix: @Overwrite the full method (matching TFMG's own source exactly),
- * restructured so the client-safe parts -- resetting
- * controller/width/height and recomputing the visual blockstate, both
- * pure local state with no cross-client authority concerns -- run
- * unconditionally on both sides, while the genuinely server-authoritative
- * parts (resizing tanks/inventory, recipe re-evaluation, capability
- * refresh, saving, network sync) stay gated behind the same client check
- * as before. This also benefits any other caller of removeController(),
- * not just our own split -- e.g. normal vat disassembly likely has the
- * same latent client-visual-lag gap.
+ * VatBlockEntity's own removeController() is a complete no-op on the
+ * client (`if (level.isClientSide) return;` as its first line, before
+ * even resetting controller/width/height). Since TFMG's own multiblock
+ * formation runs independently on both sides, the client keeps
+ * rendering the old merged structure even after a server-side split.
+ * @Overwrite restructures it so the client-safe parts (resetting local
+ * state, recomputing the blockstate) run unconditionally on both sides,
+ * while server-authoritative parts stay gated as before.
  */
 @Mixin(VatBlockEntity.class)
 public abstract class VatBlockEntityRemoveControllerClientFixMixin {

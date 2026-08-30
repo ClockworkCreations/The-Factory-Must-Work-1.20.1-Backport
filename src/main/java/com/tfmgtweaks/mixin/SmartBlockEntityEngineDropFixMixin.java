@@ -10,19 +10,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Components placed into a regular or turbine engine
- * (TurbineEngineBlockEntity extends RegularEngineBlockEntity) are lost
- * entirely when the engine is broken or wrenched up.
- *
- * Root cause: neither class overrides destroy() -- pistonInventory is a
- * plain field, never registered as a Create Behaviour, and
- * SmartBlockEntity#destroy() only drops contents for behaviours it knows
- * about. Compare WindingMachineBlockEntity, which correctly overrides
- * destroy() itself.
- *
- * Since RegularEngineBlockEntity doesn't declare destroy() itself, this
- * mixins into SmartBlockEntity#destroy() directly and scopes the added
- * behavior with an instanceof check.
+ * Components placed in a regular or turbine engine are lost entirely
+ * when broken, since neither class overrides destroy() -- pistonInventory
+ * is a plain field, never registered as a Create Behaviour, unlike
+ * WindingMachineBlockEntity which does override it. Mixes into
+ * SmartBlockEntity#destroy() directly since RegularEngineBlockEntity
+ * doesn't declare its own, scoped via instanceof.
  */
 @Mixin(SmartBlockEntity.class)
 public abstract class SmartBlockEntityEngineDropFixMixin {

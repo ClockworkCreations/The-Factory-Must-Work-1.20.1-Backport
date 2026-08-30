@@ -28,21 +28,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Places a large, organically-shaped cluster of connected Oil Rock blocks
- * via a randomized flood-fill from the origin point. Every block in a
- * cluster shares one deposit (see OilRockBlockEntity's controller/member
- * pattern) -- the first-placed block becomes that cluster's controller.
- *
- * Replaces any block in minecraft:base_stone_overworld (stone and
- * deepslate), not just exact stone.
- *
- * After the primary cluster, up to OIL_ROCK_MAX_NEARBY_DEPOSITS
- * additional, fully independent "satellite" clusters attempt to spawn
- * nearby, each with its own controller/reserves.
- *
- * Also sprinkles a few visible crude oil source blocks into adjacent air
- * pockets around each cluster, purely so deposits are visible while
- * scouting -- cosmetic only.
+ * Places a large, organically-shaped cluster of connected Oil Rock
+ * blocks via a randomized flood-fill; the first-placed block becomes
+ * that cluster's controller (see OilRockBlockEntity). Up to
+ * OIL_ROCK_MAX_NEARBY_DEPOSITS additional independent "satellite"
+ * clusters attempt to spawn nearby. Also sprinkles a few visible crude
+ * oil source blocks nearby, purely so deposits are visible while
+ * scouting.
  */
 public class OilRockFeature extends Feature<NoneFeatureConfiguration> {
 
@@ -172,7 +164,7 @@ public class OilRockFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
-        TFMGTweaks.LOGGER.info("[OilRockFeature] placed cluster of {} blocks at {}", cluster.size(), controllerPos);
+        TFMGTweaks.LOGGER.debug("[OilRockFeature] placed cluster of {} blocks at {}", cluster.size(), controllerPos);
     }
 
     private static void sprinkleVisibleOil(WorldGenLevel level, RandomSource random, List<BlockPos> cluster) {

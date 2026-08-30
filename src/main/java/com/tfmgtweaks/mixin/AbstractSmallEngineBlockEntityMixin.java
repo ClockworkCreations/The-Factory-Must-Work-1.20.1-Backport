@@ -10,19 +10,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Engines crash with an IllegalArgumentException while a
- * Create contraption carrying the engine is being assembled.
- *
- * Root cause: hasTwoShafts() calls getValue(ENGINE_STATE) for a
- * neighboring segment's position without checking it's still an engine
- * block -- during assembly that position can legitimately be air for a
- * tick, and Minecraft's getValue() throws for a missing property rather
- * than returning null.
- *
- * Fix: redirects getValue() calls in the method to check hasProperty()
- * first and return null instead of throwing, which correctly falls
- * through to "not a valid second shaft." Also guards a getControllerBE()
- * call that can be null for the same reason.
+ * Engines crash while a Create contraption carrying them is being
+ * assembled: hasTwoShafts() calls getValue(ENGINE_STATE) on a
+ * neighboring segment without checking it still has that property --
+ * during assembly that position can legitimately be air for a tick, and
+ * getValue() throws rather than returning null. Redirects it to check
+ * hasProperty() first, correctly falling through to "not a valid second
+ * shaft" instead.
  */
 @Mixin(AbstractSmallEngineBlockEntity.class)
 public abstract class AbstractSmallEngineBlockEntityMixin {

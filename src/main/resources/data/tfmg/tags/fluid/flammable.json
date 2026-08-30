@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "tfmg:napalm",
+    "tfmg:flowing_napalm",
+    "tfmgtweaks:burning_fuel",
+    "tfmgtweaks:flowing_burning_fuel"
+  ]
+}

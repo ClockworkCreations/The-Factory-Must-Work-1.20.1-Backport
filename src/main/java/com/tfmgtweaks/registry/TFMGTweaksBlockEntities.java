@@ -1,7 +1,6 @@
 package com.tfmgtweaks.registry;
 
 import com.tfmgtweaks.TFMGTweaks;
-import com.tfmgtweaks.content.boiler.BoilerBlockEntity;
 import com.tfmgtweaks.content.oilrock.OilRockBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -16,8 +15,4 @@ public class TFMGTweaksBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<OilRockBlockEntity>> OIL_ROCK =
             BLOCK_ENTITIES.register("oil_rock", () -> BlockEntityType.Builder.of(
                     OilRockBlockEntity::new, TFMGTweaksBlocks.OIL_ROCK.get()).build(null));
-
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BoilerBlockEntity>> BOILER =
-            BLOCK_ENTITIES.register("boiler", () -> BlockEntityType.Builder.of(
-                    BoilerBlockEntity::new, TFMGTweaksBlocks.BOILER.get()).build(null));
 }

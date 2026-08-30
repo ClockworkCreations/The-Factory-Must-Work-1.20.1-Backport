@@ -19,18 +19,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * The pump jack's crank-to-hammer and hammer-to-head "rope" is drawn
- * procedurally by PumpjackRenderer, the same technique vanilla uses for
- * animal leads (RenderType.leash() + addVertexPair()): a strip of quads
- * along a parabolic sag curve, sampled at 25 fixed points from a "start"
- * anchor (wherever the pose stack is translated to) to an "end" anchor
- * (TFMG's computed direction vector).
- *
- * This mixin widens the ribbon, adds a second ribbon crossed 90 degrees
- * for visual thickness, subdivides each original sample into finer ones,
- * blends configurable start/end offsets across the curve so the two ends
- * can be moved independently, and redraws the alternating light/dark
- * stripe pattern vanilla uses to fake a twisted-rope look.
+ * The pump jack's crank/hammer/head ropes are drawn procedurally, the
+ * same technique vanilla uses for animal leads: a strip of quads along
+ * a parabolic sag curve. This widens the ribbon, adds a second ribbon
+ * crossed 90 degrees for thickness, subdivides each sample into finer
+ * ones, blends configurable start/end offsets, and redraws the
+ * alternating stripe pattern to fake a twisted-rope look.
  */
 @Mixin(PumpjackRenderer.class)
 public abstract class PumpjackRendererMixin {

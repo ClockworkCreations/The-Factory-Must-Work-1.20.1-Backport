@@ -7,18 +7,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * A pump jack's multiblock invalidates and has
- * to be manually rebuilt if any nearby chunk unloads, even briefly.
- *
- * Root cause: tick() re-derives "base"/"crank" from getBlockEntity()
- * every tick with no cooldown, and disassembles immediately the moment
- * either is null -- including for a single-tick chunk unload blip during
- * normal play.
- *
- * Fix: redirect the isComplete() call feeding disassemble() to track
- * consecutive "incomplete" ticks, only reporting false once that streak
- * exceeds a grace period. A momentary hiccup self-resolves within the
- * window; a genuine break still disassembles, just slightly later.
+ * A pump jack's multiblock invalidates and needs manual rebuilding if
+ * any nearby chunk unloads even briefly, since tick() disassembles
+ * immediately the moment a neighbor lookup returns null. Redirects the
+ * isComplete() check to track consecutive "incomplete" ticks, only
+ * disassembling once that streak exceeds a grace period.
  */
 @Mixin(PumpjackBlockEntity.class)
 public abstract class PumpjackBlockEntityMixin {

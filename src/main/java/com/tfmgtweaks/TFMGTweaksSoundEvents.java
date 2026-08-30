@@ -5,20 +5,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 
 /**
- * The electric_hum, generator_hum, switch_on, and
- * switch_off sound events were removed during TFMG's 1.0 -> 1.2 rewrite
- * (only affecting generators, rotors, transformers, switches -- engines
- * kept their sound code).
- *
- * Reuses TFMG's own TFMGSoundEvents registry API rather than a separate
- * sound system. Audio and sounds.json/lang entries recovered from TFMG
- * 1.0.2f, shipped as resource overrides under assets/tfmg/.
- *
- * Timing: TFMG's own constructor calls TFMGSoundEvents.prepare()
- * synchronously before ours runs, so each entry here calls prepare() on
- * itself individually rather than relying on that bulk pass. TFMG's
- * RegisterEvent listener then picks these up automatically, since ALL is
- * a shared, mutable map.
+ * Four sound events removed during TFMG's 1.0 -> 1.2 rewrite, restored
+ * via TFMG's own TFMGSoundEvents registry API. Audio and text recovered
+ * from TFMG 1.0.2f.
  */
 public class TFMGTweaksSoundEvents {
 

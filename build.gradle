@@ -10,7 +10,6 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
-    // TFMG (and any other mod jars you build against) live here as plain files.
     flatDir { dirs 'libs' }
 }
 
@@ -67,29 +66,22 @@ dependencies {
     compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
 
-    // Same artifact TFMG itself depends on (as `implementation`, i.e. a hard
-    // requirement -- TFMG won't load without JEI present either way), but
-    // compileOnly here since we don't need to bundle/redistribute it, just
-    // resolve mezz.jei.* types at compile time. JEI itself comes along with
-    // TFMG (or the user's own instance) at runtime.
+    // Same artifact TFMG itself depends on.
     compileOnly("mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}")
 
-    // TFMG itself, as a plain jar dropped into /libs (see README).
-    // ModDev auto-detects the mods.toml inside it and loads it as a real mod
-    // in dev runs, so mixins/accessors targeting its classes work normally.
-    // Matched by filename pattern (tfmg*.jar) rather than an exact name so a
-    // version bump on your end doesn't silently break the build.
+    // TFMG, as a plain jar dropped into /libs.
     implementation fileTree(dir: 'libs', include: ['tfmg*.jar'])
 
-    // Sable Companion -- a lightweight, stable API for optional Sable
-    // compatibility (see SurfaceScannerBlockEntityMixin), extracted directly
-    // from a real Sable jar's own embedded jarjar dependency rather than a
-    // guessed Maven coordinate. compileOnly (not implementation) since this
-    // is genuinely optional: Sable itself bundles this same library and
-    // provides it at runtime for anyone who actually has Sable installed --
-    // we only need its classes to compile against, never to bundle or load
-    // as our own mod.
+    // Sable Companion -- a API for optional Sable compatibility.
     compileOnly fileTree(dir: 'libs', include: ['sable-companion*.jar'])
+
+    // Pollution of the Realms (modid "adpother") -- a plain jar dropped
+    // into /libs nessisary for building but optional when uning the mod.
+	// Adds additional features to TFMG when using Pollution of the Realms.
+    compileOnly fileTree(dir: 'libs', include: ['AdPother*.jar', 'adpother*.jar'])
+
+    // ForgeEndertech -- Required dependency for Pollution of the Realms.
+    compileOnly fileTree(dir: 'libs', include: ['ForgeEndertech*.jar', 'forgeendertech*.jar'])
 }
 
 var tfmgJars = fileTree(dir: 'libs', include: ['tfmg*.jar']).files

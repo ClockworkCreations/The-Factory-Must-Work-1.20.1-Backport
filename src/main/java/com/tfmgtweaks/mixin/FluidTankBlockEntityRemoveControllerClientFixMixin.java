@@ -13,26 +13,13 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * Same confirmed bug and fix shape as VatBlockEntityRemoveControllerClientFixMixin,
- * for Create's own FluidTankBlockEntity (the shared parent behind
- * TFMGFluidTankMixedTypeConnectivityFixMixin's Aluminum/Cast Iron split):
- * removeController()'s first line is `if (level.isClientSide) return;`,
- * making it a complete no-op on the client -- not even
- * controller/width/height get reset there. Since Create's own multiblock
- * formation runs independently on both sides, the client's own copy of
- * the (wrong, merged) structure is never corrected by a splitMulti()
- * call alone.
- *
- * This is Create's own shared class, used by every FluidTankBlockEntity
- * subclass in the game (not just TFMG's Aluminum/Cast Iron tanks) -- but
- * the fix itself is a strict improvement with no behavior change for
- * anyone: the client-safe parts (local field reset, recomputing the
- * visual blockstate) simply run on both sides now instead of only the
- * server, while every genuinely server-authoritative part (tank resize,
- * boiler state, capability refresh, saving, network sync) stays exactly
- * as gated as before. Confirmed via source that TFMG's own
- * TFMGFluidTankBlockEntity adds no fields or overrides of its own here,
- * so this applies cleanly to it too.
+ * Same bug and fix as VatBlockEntityRemoveControllerClientFixMixin, for
+ * Create's own FluidTankBlockEntity (shared by every fluid tank
+ * subclass, including TFMG's own): removeController() is a complete
+ * no-op on the client, so the client's copy of a merged structure is
+ * never corrected. Client-safe parts now run on both sides; server-
+ * authoritative parts stay gated as before -- a strict improvement with
+ * no behavior change for anyone.
  */
 @Mixin(FluidTankBlockEntity.class)
 public abstract class FluidTankBlockEntityRemoveControllerClientFixMixin {

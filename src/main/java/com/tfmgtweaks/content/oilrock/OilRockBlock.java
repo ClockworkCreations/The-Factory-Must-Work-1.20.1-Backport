@@ -20,19 +20,11 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A new underground-spawning oil deposit, replacing (or supplementing,
- * depending on config) TFMG's own bedrock-locked oil worldgen. Drop-in
- * equivalent for pump jack extraction, with an added fracking mechanic:
- * a connected pump jack pumping Steam into it speeds up extraction, with
- * that progress decaying continuously (see OilRockBlockEntity) rather
- * than a one-time unlock.
- *
- * CRACKED is a real blockstate property so the cracked/uncracked
- * textures actually render.
- *
- * onRemove() leaves behind a crude oil source block when genuinely
- * mined, narrowly scoped to avoid firing for our own cracked-state
- * updates or depletion converting a cluster to stone.
+ * A new underground-spawning oil deposit, drop-in equivalent for pump
+ * jack extraction with an added fracking mechanic: Steam speeds up
+ * extraction, decaying continuously rather than a one-time unlock (see
+ * OilRockBlockEntity). CRACKED is a real blockstate property so the
+ * cracked/uncracked textures actually render.
  */
 public class OilRockBlock extends BaseEntityBlock {
 

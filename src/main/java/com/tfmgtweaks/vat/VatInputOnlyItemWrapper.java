@@ -5,16 +5,10 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * See VatBlockEntityCapabilityFixMixin for the full explanation. This wraps
- * a vat's input and output item inventories the same way
- * CombinedInvWrapper does (and delegates everything except insertItem/
- * isItemValid to a real CombinedInvWrapper instance, reusing its correct
- * slot-indexing logic), but rejects insertion into any slot belonging to
- * the output inventory. External hoppers/funnels pushing items in can
- * therefore never fill the output slots and starve recipe completion --
- * they're restricted to the input side, exactly like the vat's design
- * intends, instead of spilling into whichever slots happen to still be
- * empty across the combined space.
+ * Same idea as VatInputOnlyFluidWrapper but for items (see
+ * VatBlockEntityCapabilityFixMixin): wraps a vat's input/output
+ * inventories, rejecting insertion into any output slot so external
+ * hoppers can't starve recipe completion.
  */
 public class VatInputOnlyItemWrapper implements IItemHandlerModifiable {
 

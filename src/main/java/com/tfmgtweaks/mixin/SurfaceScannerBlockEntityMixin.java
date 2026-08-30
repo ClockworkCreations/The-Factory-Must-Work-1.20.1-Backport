@@ -2,13 +2,16 @@ package com.tfmgtweaks.mixin;
 
 import com.drmangotea.tfmg.config.TFMGConfigs;
 import com.drmangotea.tfmg.content.machinery.oil_processing.surface_scanner.SurfaceScannerBlockEntity;
-import com.drmangotea.tfmg.registry.TFMGTags;
 import com.tfmgtweaks.compat.SableIntegration;
 import com.tfmgtweaks.config.TFMGTweaksConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.AABB;
@@ -18,22 +21,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * TFMG's own SurfaceScannerBlockEntity#hasOil() only checks a single
- * fixed Y level (matching where TFMG's own oil spawns), so it can never
- * find Oil Rock, which spawns across a configurable height range.
- *
- * Two fixes:
- *  1. tfmgtweaks$scanOilRockRange (TAIL): if TFMG's own check finds
- *     nothing, fall back to a scan across Oil Rock's own configured
- *     height range, using strided sampling (every 3rd block) rather than
- *     an exhaustive scan for performance.
- *  2. tfmgtweaks$scanFromSableSubLevel (HEAD): if the scanner is placed
- *     on an active Sable physics sub-level, positions passed to hasOil()
- *     are in the sub-level's local space, not the real world -- this
- *     resolves to the real world position and scans there instead.
+ * TFMG's own hasOil() only checks a single fixed Y level, so it can
+ * never find Oil Rock, which spawns across a configurable range --
+ * falls back to scanning that range (strided, not exhaustive) if the
+ * original check finds nothing. Also resolves a Sable sub-level's local
+ * position to the real world one before scanning, since hasOil()
+ * otherwise checks the wrong coordinates there.
  */
 @Mixin(SurfaceScannerBlockEntity.class)
 public abstract class SurfaceScannerBlockEntityMixin {
+
+    private static final TagKey<Block> SURFACE_SCANNER_FINDABLE_TAG = TagKey.create(
+            Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("tfmg", "surface_scanner_findable"));
 
     @Inject(method = "hasOil", at = @At("HEAD"), cancellable = true)
     private void tfmgtweaks$scanFromSableSubLevel(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
@@ -84,7 +83,7 @@ public abstract class SurfaceScannerBlockEntityMixin {
         AABB originalArea = new AABB(chunk.getPos().getMiddleBlockPosition(scanDepth).north().west())
                 .inflate(7, 0, 7);
         for (BlockState state : chunk.getBlockStates(originalArea).toList()) {
-            if (state.is(TFMGTags.TFMGBlockTags.SURFACE_SCANNER_FINDABLE.tag)) {
+            if (state.is(SURFACE_SCANNER_FINDABLE_TAG)) {
                 return true;
             }
         }
@@ -110,7 +109,7 @@ public abstract class SurfaceScannerBlockEntityMixin {
         for (int x = minX; x <= minX + 15; x += stride) {
             for (int z = minZ; z <= minZ + 15; z += stride) {
                 for (int y = minY; y <= maxY; y += stride) {
-                    if (level.getBlockState(new BlockPos(x, y, z)).is(TFMGTags.TFMGBlockTags.SURFACE_SCANNER_FINDABLE.tag)) {
+                    if (level.getBlockState(new BlockPos(x, y, z)).is(SURFACE_SCANNER_FINDABLE_TAG)) {
                         return true;
                     }
                 }

@@ -19,17 +19,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * Draws a small, floating bucket icon just outside each pump jack face a
- * player has wrenched to a role: TFMG's own crude oil bucket for oil,
- * Polluted Water's bucket (or plain water, if not installed) for waste,
- * and our own Steam bucket for Steam. Unassigned faces show nothing.
- *
- * Uses ItemRenderer.renderStatic(), the same API Create itself uses for
- * rendering an item's baked model at an arbitrary transform, rather than
- * building raw quads by hand.
- *
- * Per-direction rotation matches the same convention vanilla item frames
- * use for each of the 6 block faces.
+ * Draws a small, floating bucket icon outside each pump jack face a
+ * player has wrenched to a role -- oil, waste, or Steam's own bucket.
+ * Unassigned faces show nothing. Uses ItemRenderer.renderStatic(), the
+ * same API Create uses for rendering a baked item model at an arbitrary
+ * transform.
  */
 public class PumpjackFaceIconRenderer implements BlockEntityRenderer<PumpjackBaseBlockEntity> {
 

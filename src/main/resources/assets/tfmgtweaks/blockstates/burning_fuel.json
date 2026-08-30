@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=1": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=2": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=3": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=4": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=5": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=6": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=7": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=8": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=9": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=10": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=11": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=12": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=13": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=14": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    },
+    "level=15": {
+      "model": "tfmgtweaks:block/burning_fuel"
+    }
+  }
+}

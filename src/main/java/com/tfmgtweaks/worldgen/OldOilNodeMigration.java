@@ -23,23 +23,13 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * TFMG's own oil_well/oil_deposit are both hardcoded to spawn only at
- * Y=-64, so by default, detecting an unmigrated deposit is just "is
- * tfmg:oil_deposit present at Y=-64 in this chunk" -- a single block
- * check per column. If OIL_ROCK_MIGRATE_SCAN_FULL_HEIGHT is also
- * enabled (for a world where a different mod's own worldgen override
- * let old deposits spawn at other heights too), every Y level in every
- * loaded column is checked instead. Migrating removes the marker found
- * (converting it to bedrock or stone -- see migrate()), so no separate
- * tracking is needed either way.
- *
- * Only fires when both OIL_ROCK_REPLACES_OLD_OIL_NODES and
- * OIL_ROCK_MIGRATE_OLD_DEPOSITS are true, extending the same "Oil Rock
- * is the only way to find oil" intent to pre-existing chunks.
- *
- * Detection happens on chunk load; actual world modification is
- * deferred to a queue drained a few entries per server tick, rather than
- * mutating blocks inside the load event itself.
+ * Converts TFMG's own oil_well/oil_deposit markers (normally Y=-64, or
+ * every Y level if OIL_ROCK_MIGRATE_SCAN_FULL_HEIGHT is set) into an Oil
+ * Rock cluster instead, so pre-existing chunks get the same "Oil Rock is
+ * the only way to find oil" treatment new ones do. Only runs when
+ * OIL_ROCK_REPLACES_OLD_OIL_NODES and OIL_ROCK_MIGRATE_OLD_DEPOSITS are
+ * both enabled. Detection happens on chunk load; actual migration is
+ * queued and drained a few entries per tick.
  */
 @EventBusSubscriber(modid = TFMGTweaks.MOD_ID)
 public class OldOilNodeMigration {
@@ -105,32 +95,14 @@ public class OldOilNodeMigration {
     }
 
     /**
-     * TFMG's own oil deposit feature also carves a shaft of crude oil
-     * fluid up to 24 blocks above the marker, plus scattered fossilstone
-     * -- both fail growCluster()'s BASE_STONE_OVERWORLD check, so a new
-     * cluster can't grow directly above a migrated marker without this.
-     *
-     * Also clears vanilla bedrock within the same range. A marker at the
-     * normal Y=-64 has its attempted starting position (marker.above(),
-     * Y=-63) land directly inside vanilla's own randomized bottom-of-
-     * world bedrock transition zone -- the bottom several Y levels each
-     * have a per-column random chance of generating as bedrock instead
-     * of stone, decreasing with height. growCluster() hard-fails
-     * (returns null, placing nothing) if the exact starting position
-     * isn't stone-type, so without this a large fraction of migration
-     * attempts at the normal height would fail purely because vanilla
-     * happened to generate bedrock at that one specific column -- not
-     * from anything TFMG's oil deposit itself left behind. Harmless
-     * no-op for a marker found well above the world's actual bottom
-     * (the full-height-scan case), since real vanilla bedrock never
-     * generates up there in the first place.
-     *
-     * Clears a 3x3 column (the shaft can drift horizontally) by
-     * SHAFT_CLEAR_HEIGHT, replacing only crude oil fluid, fossilstone,
-     * and bedrock with deepslate -- not a blanket clear, so any real
-     * cave the shaft passed through is left alone. Starts at y=1 (one
-     * above the marker), so this never touches the marker's own
-     * position, which migrate() itself deliberately overwrites.
+     * TFMG's oil deposit also carves a fluid shaft up to 24 blocks above
+     * the marker plus scattered fossilstone -- both fail growCluster()'s
+     * stone check, so a new cluster can't grow there. Also clears
+     * vanilla bedrock in range, since Y=-64 lands inside vanilla's
+     * randomized bottom-of-world bedrock zone, which would otherwise
+     * fail growCluster()'s starting-position check purely by chance.
+     * Clears a 3x3 column, not a blanket clear, so a real cave the shaft
+     * passed through is left alone.
      */
     private static final int SHAFT_CLEAR_HEIGHT = 24;
 
@@ -154,16 +126,7 @@ public class OldOilNodeMigration {
         }
     }
 
-    /**
-     * How close to the world's actual minimum build height a marker
-     * needs to be for bedrock to still be the right deactivation choice
-     * -- a small margin above the exact minimum, since vanilla's own
-     * randomized bedrock transition zone (see clearOldOilShaft's own
-     * doc) extends a few blocks above the true floor too, so a marker
-     * just above the literal minimum is still unambiguously "at the
-     * bottom of the world" in the way the bedrock choice was designed
-     * around.
-     */
+    /** Margin above the true world minimum still treated as "at the bottom" for the bedrock-vs-stone choice below. */
     private static final int NEAR_WORLD_BOTTOM_MARGIN = 8;
 
     private static void migrate(ServerLevel level, BlockPos oldMarkerPos) {
@@ -186,27 +149,15 @@ public class OldOilNodeMigration {
             OilRockFeature.placeCluster(level, random, cluster);
         }
 
-        // Deactivate the old marker either way, so this chunk is never
-        // re-queued on a later load regardless of whether a new cluster
-        // happened to form successfully above it.
-        //
-        // Bedrock only for a marker actually near the world's bottom --
-        // that's where the normal Y=-64 case always lands, and bedrock
-        // blends in naturally there as part of the world's own bottom
-        // layer instead of reading as an obvious leftover block, with
-        // the added benefit that being permanently unbreakable means it
-        // can never later be mistaken for something minable. A marker
-        // found well above the bottom (only possible via the full-
-        // height-scan option, for old deposits a different mod's
-        // worldgen let spawn elsewhere) uses stone instead -- an
-        // unbreakable bedrock block floating in the middle of, say, a
-        // sky island would be far more out of place than a single
-        // ordinary stone block sitting where the deposit used to be.
+        // Deactivate the old marker either way, so this chunk isn't
+        // re-queued later. Bedrock near the world bottom (blends in,
+        // unbreakable); stone elsewhere (a full-height-scan marker,
+        // where bedrock would look out of place).
         boolean nearWorldBottom = oldMarkerPos.getY() <= level.getMinBuildHeight() + NEAR_WORLD_BOTTOM_MARGIN;
         BlockState deactivatedState = nearWorldBottom ? Blocks.BEDROCK.defaultBlockState() : Blocks.STONE.defaultBlockState();
         level.setBlock(oldMarkerPos, deactivatedState, 3);
 
-        TFMGTweaks.LOGGER.info("[OldOilNodeMigration] migrated old oil node at {} (new attempt above at {})",
+        TFMGTweaks.LOGGER.debug("[OldOilNodeMigration] migrated old oil node at {} (new attempt above at {})",
                 oldMarkerPos, newAttemptPos);
     }
 }

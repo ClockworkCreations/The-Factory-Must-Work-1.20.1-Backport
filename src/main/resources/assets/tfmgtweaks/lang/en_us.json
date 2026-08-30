@@ -1,6 +1,12 @@
 {
   "block.tfmgtweaks.oil_rock": "Oil Rock",
-  "block.tfmgtweaks.boiler": "Boiler",
+  "block.tfmgtweaks.burning_fuel": "Burning Fuel",
   "fluid.tfmgtweaks.steam": "Steam",
-  "item.tfmgtweaks.steam_bucket": "Steam Tank"
+  "fluid.tfmgtweaks.burning_fuel": "Burning Fuel",
+  "item.tfmgtweaks.steam_bucket": "Steam Tank",
+  "item.tfmgtweaks.burning_fuel_bucket": "Bucket of Burning Fuel",
+  "advancements.tfmgtweaks.tank_exploded.title": "That's Not Supposed to Happen",
+  "advancements.tfmgtweaks.tank_exploded.description": "Explode a fluid tank",
+  "advancements.tfmgtweaks.fracked_oil.title": "Cracked It",
+  "advancements.tfmgtweaks.fracked_oil.description": "Frack an Oil Rock deposit"
 }

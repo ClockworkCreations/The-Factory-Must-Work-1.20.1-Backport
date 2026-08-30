@@ -7,18 +7,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Same confirmed bug pattern as CastingBasinBlockEntityCapabilityFixMixin
- * -- see that class's doc for the fuller background on this deep search.
- *
- * Confirmed via source: FlarestackBlockEntity.tick() calls
- * tankInventory.drain(...) every tick to burn off gas piped into it, but
- * never calls invalidateCapabilities() anywhere in the class. A pipe that
- * cached "tank is full, can't fill more" the moment the flarestack's
- * buffer filled up has no signal telling it room opened back up after
- * some was drained/burned off, and may simply stop feeding it -- the
- * flarestack is meant to act as a relief valve for excess gas elsewhere in
- * the system, so this can manifest as gas backing up and production
- * stalling upstream, not just at the flarestack itself.
+ * Same pattern as CastingBasinBlockEntityCapabilityFixMixin: tick()
+ * drains gas every tick but never calls invalidateCapabilities(), so a
+ * pipe that cached "full" once has no signal room opened back up --
+ * gas can back up and stall production upstream, not just here.
  */
 @Mixin(FlarestackBlockEntity.class)
 public abstract class FlarestackBlockEntityCapabilityFixMixin {

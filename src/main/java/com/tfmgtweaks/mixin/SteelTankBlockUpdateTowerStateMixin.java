@@ -11,17 +11,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * SteelTankBlock.updateTowerState() calls
- * getControllerBE() up to five times without checking for null, which it
- * legitimately can be -- e.g. while a Create contraption carrying a
- * distillation tower is being assembled/disassembled. Both reported
- * crash variants are different lines hitting this same unguarded
- * pattern.
- *
- * Fix: early-cancel guard so none of the five unsafe call sites run when
- * the controller is unavailable, rather than patching each individually.
- * updateTowerState is static, so its tankBE lookup is recomputed from
- * the method's own parameters rather than needing local capture.
+ * SteelTankBlock.updateTowerState() calls getControllerBE() up to five
+ * times without checking for null, which it legitimately can be -- e.g.
+ * while a Create contraption carrying a distillation tower is being
+ * assembled. One early-cancel guard covers all five unsafe call sites
+ * at once, rather than patching each individually.
  */
 @Mixin(SteelTankBlock.class)
 public abstract class SteelTankBlockUpdateTowerStateMixin {

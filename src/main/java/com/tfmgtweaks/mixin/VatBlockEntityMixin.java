@@ -7,20 +7,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Reported: "Chemical Vat refuses recipes intermittently
- * -- sometimes a valid recipe just won't process... looks like a stale
- * recipe cache or input queue not invalidating."
- *
- * Root cause: evaluate() (scans for attached machines, builds
- * machineMap) is gated by a one-shot flag consumed on the first tick --
- * if that first call runs before every neighboring machine's chunk is
- * loaded (a real server timing difference), machineMap permanently
- * misses whatever wasn't loaded yet, which can make an otherwise-valid
- * recipe appear unrecognized. Same pattern already found and fixed for
- * the distillation tower, blast furnace, and pump jack.
- *
- * Fix: call evaluate() periodically from lazyTick() instead of relying
- * solely on the one-shot flag.
+ * A Vat sometimes refuses a valid recipe intermittently, since
+ * evaluate() (scans for attached machines) is gated by a one-shot flag
+ * consumed on the first tick -- if that runs before every neighboring
+ * machine's chunk is loaded, it permanently misses whatever wasn't
+ * loaded yet. Calls evaluate() periodically from lazyTick() instead,
+ * the same self-healing pattern used elsewhere.
  */
 @Mixin(VatBlockEntity.class)
 public abstract class VatBlockEntityMixin {

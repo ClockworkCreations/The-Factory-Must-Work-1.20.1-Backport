@@ -18,18 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Lets pump jacks recognize Oil Rock deposits, not just TFMG's own oil
- * deposit. findDeposit()'s single-block check is redirected to check our
- * own tfmgtweaks:oil_deposit_blocks tag (containing both tfmg:oil_deposit
- * and tfmgtweaks:oil_rock) instead.
- *
- * Two additional injections around the existing miningRate/process()
- * sequence in tick():
- *  - Before process(): applies OIL_ROCK_BASE_EXTRACTION_MULTIPLIER (and
- *    OIL_ROCK_CRACKED_EXTRACTION_MULTIPLIER once cracked) when connected
- *    to an Oil Rock. Zeroes miningRate entirely if
- *    OIL_ROCK_REQUIRE_CRACKED_TO_EXTRACT is on and it isn't cracked yet.
- *  - After process(): if finite reserves are enabled, depletes the
- *    deposit by miningRate and resets it once empty.
+ * deposit, via a redirected tag check. Also applies Oil Rock's own
+ * extraction multipliers (base, plus cracked bonus) around process(),
+ * zeroing miningRate if cracking is required but hasn't happened yet,
+ * and depletes finite reserves afterward.
  */
 @Mixin(PumpjackBaseBlockEntity.class)
 public abstract class PumpjackBaseBlockEntityMixin {

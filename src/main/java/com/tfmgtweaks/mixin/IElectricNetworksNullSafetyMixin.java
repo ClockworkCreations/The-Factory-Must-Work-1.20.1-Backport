@@ -11,17 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * IElectric is the shared base for essentially every electric block.
- * Three of its default methods -- getOrCreateElectricNetwork(),
- * onRemoved(), setNetwork() -- all call
- * ElectricNetworkManager.networks.get(getLevelAccessor()) with no null
- * check, even though ElectricNetworkManager's own
- * getOrCreateNetworkFor() uses computeIfAbsent() for this identical map,
- * proving it needs the guard. A null here (any timing edge case around
- * level load/unload) NPE-crashes electric block placement/removal.
- *
- * Fix: redirect these Map.get() calls to the same null-safe
- * computeIfAbsent pattern used correctly elsewhere.
+ * Three of IElectric's default methods call
+ * ElectricNetworkManager.networks.get() with no null check, even though
+ * that same map's own getOrCreateNetworkFor() uses computeIfAbsent(),
+ * proving it needs the guard -- a null here NPE-crashes electric block
+ * placement/removal. Redirects to the same null-safe pattern.
  */
 @Mixin(IElectric.class)
 public interface IElectricNetworksNullSafetyMixin {

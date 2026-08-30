@@ -23,36 +23,12 @@ import java.util.List;
 
 /**
  * Vat recipes with 2+ item outputs silently drop every output after the
- * first one that happens to stack onto an existing item in the output
- * inventory. Previously shelved: fixing it needs actual control-flow
- * surgery inside the loop (a `break` should be a `continue`), not the
- * kind of single-value @Redirect used for everything else -- and only a
- * full method @Overwrite can change that safely, which is a meaningfully
- * bigger, more invasive change than this mod otherwise makes. Confirmed
- * exact and complete against VatBlockEntity's own current source before
- * writing this copy, specifically so the replication itself doesn't
- * introduce a new mismatch.
- *
- * Root cause, in TFMG's own handleRecipe():
- *
- *   for (ProcessingOutput output : recipe.getRollableResults()) {
- *       ...
- *       if (handled) break;   // exits the OUTER loop over every output,
- *                             // when it should only skip to the next one
- *       ...
- *   }
- *
- * If the first output in a multi-output recipe happens to stack onto an
- * item already sitting in an output slot, `handled` becomes true and the
- * entire loop exits right there -- every remaining output in that recipe
- * is never written at all, silently. A recipe with only one item output
- * (or with fluid-only byproducts) never touches this path at all, which
- * is why it wasn't the explanation for the original, more specific report
- * that prompted this investigation -- but it's a real, confirmed bug in
- * its own right for any recipe with multiple item outputs.
- *
- * Everything else in this method is copied unchanged from TFMG's own
- * source; the only actual change is that one break -> continue.
+ * first one that stacks onto an existing item, since TFMG's own
+ * handleRecipe() uses `break` instead of `continue` when an output is
+ * handled by stacking, exiting the whole outer loop. A full @Overwrite
+ * was needed since this needs actual control-flow surgery, not a
+ * single-value redirect; everything else here is copied unchanged from
+ * TFMG's own source.
  */
 @Mixin(VatBlockEntity.class)
 public abstract class VatBlockEntityHandleRecipeFixMixin {

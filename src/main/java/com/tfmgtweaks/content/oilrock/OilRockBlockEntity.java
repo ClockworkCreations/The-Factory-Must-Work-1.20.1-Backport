@@ -2,6 +2,7 @@ package com.tfmgtweaks.content.oilrock;
 
 import com.drmangotea.tfmg.base.lang.TFMGTexts;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.tfmgtweaks.advancement.TFMGTweaksTriggers;
 import com.tfmgtweaks.config.TFMGTweaksConfig;
 import com.tfmgtweaks.registry.TFMGTweaksBlockEntities;
 import net.minecraft.ChatFormatting;
@@ -14,9 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -25,21 +29,11 @@ import java.util.List;
 
 /**
  * Oil rocks form connected deposits sharing one pool of reserves/cracking
- * progress, via a controller/member pattern (see OilRockFeature, which
- * establishes it at worldgen time).
- *
- *  - controller: null if this block IS the controller; otherwise the
- *    position of whichever block holds the real shared state.
- *  - members: only meaningful on the controller -- every position in this
- *    deposit, including the controller's own.
- *  - oilReserves / fluidAbsorbed / cracked: only meaningful on the
- *    controller; every accessor resolves to it automatically.
- *
- * Fracking happens via the connected pump jack's fracking buffer (see
- * PumpjackFrackingWrapper), which calls addFrackingProgress() while
- * running. Being "cracked" isn't permanent -- fluidAbsorbed decays
- * continuously (see tick()), so a pump jack has to keep feeding Steam
- * fast enough to outpace decay to keep the extraction bonus.
+ * progress via a controller/member pattern (established at worldgen time
+ * by OilRockFeature). controller is null on the controller itself;
+ * members and reserves/cracking state are only meaningful there.
+ * Fracking (via PumpjackFrackingWrapper) isn't permanent -- fluidAbsorbed
+ * decays continuously, so Steam has to keep outpacing decay.
  */
 public class OilRockBlockEntity extends BlockEntity implements IHaveGoggleInformation {
 
@@ -50,6 +44,14 @@ public class OilRockBlockEntity extends BlockEntity implements IHaveGoggleInform
     private int oilReserves;
     private int fluidAbsorbed = 0;
     private boolean cracked = false;
+
+    /**
+     * Ticks since addFrackingProgress() last received a positive amount
+     * -- resets even if the deposit was already at cap, since actively
+     * being fed should prevent decay regardless. Not saved to NBT: a
+     * fresh 0 after reload is a harmless, conservative default.
+     */
+    private int ticksSinceLastFed = 0;
 
     public OilRockBlockEntity(BlockPos pos, BlockState state) {
         super(TFMGTweaksBlockEntities.OIL_ROCK.get(), pos, state);
@@ -62,11 +64,17 @@ public class OilRockBlockEntity extends BlockEntity implements IHaveGoggleInform
             return;
         }
         if (fluidAbsorbed > 0) {
-            int decay = TFMGTweaksConfig.OIL_ROCK_FRACKING_DECAY_RATE.get();
-            if (decay > 0) {
-                fluidAbsorbed = Math.max(0, fluidAbsorbed - decay);
-                setChanged();
+            int graceTicks = TFMGTweaksConfig.OIL_ROCK_FRACKING_DECAY_GRACE_TICKS.get();
+            if (ticksSinceLastFed > graceTicks) {
+                int decay = TFMGTweaksConfig.OIL_ROCK_FRACKING_DECAY_RATE.get();
+                if (decay > 0) {
+                    fluidAbsorbed = Math.max(0, fluidAbsorbed - decay);
+                    setChanged();
+                }
             }
+        }
+        if (ticksSinceLastFed < Integer.MAX_VALUE) {
+            ticksSinceLastFed++;
         }
         updateCrackedState();
     }
@@ -124,6 +132,7 @@ public class OilRockBlockEntity extends BlockEntity implements IHaveGoggleInform
         if (amount <= 0) {
             return 0;
         }
+        controllerBE.ticksSinceLastFed = 0;
         int cap = TFMGTweaksConfig.OIL_ROCK_FLUID_TO_FULLY_CRACK.get();
         int room = cap - controllerBE.fluidAbsorbed;
         int accepted = Math.min(amount, room);
@@ -181,6 +190,18 @@ public class OilRockBlockEntity extends BlockEntity implements IHaveGoggleInform
             }
         }
         setChanged();
+        // Only on the false-to-true transition, not the reverse (which
+        // isn't currently reachable, but this reads correctly either
+        // way) -- awards to nearby players rather than threading a
+        // specific player reference through the whole pump jack call
+        // chain, since fracking is a passive, machine-driven process
+        // with no single player genuinely "responsible" for it.
+        if (cracked && level instanceof ServerLevel serverLevel) {
+            AABB range = new AABB(getBlockPos()).inflate(32);
+            for (ServerPlayer player : serverLevel.getEntitiesOfClass(ServerPlayer.class, range)) {
+                TFMGTweaksTriggers.FRACKED_OIL.trigger(player);
+            }
+        }
     }
 
     @Override

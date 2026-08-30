@@ -8,23 +8,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
- * After removing a cable insulator, the other end
- * of the connection keeps showing stale voltage/network data forever.
- *
- * Root cause: three places in this class read connection.blockPos1
- * assuming it's always "the other end," when it's actually whichever
- * endpoint wasn't stored as blockPos2 -- roughly half the time, THIS
- * connector is blockPos1, so the real partner (blockPos2) never gets
- * notified/pruned/traversed correctly (in notifyRemoval(),
- * removeConnection()'s cleanup lambda, and getConnectedWires()).
- *
- * Fix: read whichever endpoint isn't this connector's own position,
- * instead of always assuming blockPos1.
+ * After removing a cable insulator, the other end keeps showing stale
+ * voltage/network data, since three places here read
+ * connection.blockPos1 assuming it's always the other end, when it's
+ * actually whichever endpoint wasn't stored as blockPos2. Reads
+ * whichever endpoint isn't this connector's own position instead.
+ * require = 0, since CE rewrote this logic and no longer has these
+ * field accesses to redirect.
  */
 @Mixin(CableConnectorBlockEntity.class)
 public abstract class CableConnectorBlockEntityMixin {
 
     @Redirect(
+        require = 0,
         method = {
             "notifyRemoval",
             "lambda$removeConnection$1",

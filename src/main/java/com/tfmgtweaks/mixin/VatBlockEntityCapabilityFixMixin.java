@@ -12,28 +12,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Chemical vats: a full input side effectively blocks output.
- *
- * Root cause: VatBlockEntity exposes its item/fluid capability as a plain
- * combined wrapper over input+output with no concept of which side
- * external insertion should go into. Once input fills up, an external
- * hopper/pump can spill directly into the output side, so recipe
- * completion (which needs an empty output slot) finds none and
- * production silently stalls.
- *
- * Fix: two wrapper classes (VatInputOnlyItemWrapper,
- * VatInputOnlyFluidWrapper) that delegate everything to the real combined
- * wrapper except insert/fill, which they route to the input side only.
- * Only applied on the controller branch.
- *
- * tfmgtweaks$invalidateCapabilitiesOnTick fixes a separate, related bug:
- * VatBlockEntity only calls invalidateCapabilities() from
- * refreshCapability() (structural changes only) -- handleRecipe(), which
- * actually writes new output, never calls it. A pipe that cached "nothing
- * here" right after the vat formed never learns output became available.
- * Runs unconditionally at HEAD of tick() rather than injecting into
- * handleRecipe() (which has multiple early returns that would risk a
- * silently-skipped TAIL injection).
+ * Chemical vats: a full input blocks output, since VatBlockEntity
+ * exposes a plain combined capability with no concept of which side
+ * external insertion should go into -- once input fills, a hopper/pump
+ * spills into output too, leaving no empty slot for recipe completion.
+ * Two wrapper classes route insert/fill to the input side only.
+ * tfmgtweaks$invalidateCapabilitiesOnTick fixes a related gap:
+ * handleRecipe() writes new output but never invalidates capabilities,
+ * so a pipe that cached "nothing here" never learns output arrived.
  */
 @Mixin(VatBlockEntity.class)
 public abstract class VatBlockEntityCapabilityFixMixin {

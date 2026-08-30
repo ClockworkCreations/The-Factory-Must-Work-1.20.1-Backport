@@ -9,34 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * TFMG's own TrafficLightBlockEntity.tick() picks the light color with:
- *
- *   int halfTimer = timerLength.getValue() / 2;
- *   if (timer < halfTimer - 30 && timer > 60) light = 0;      // green
- *   else if (timer > halfTimer + 30) light = 2;                // red
- *   else light = 1;                                            // yellow
- *
- * Both transition widths (30 for the yellow-before-green window, 60 for
- * the yellow-before-reset window) are fixed tick counts, never scaled to
- * the actual configured timer length. At TFMG's own default/minimum
- * timer setting (180 ticks, from timerLength's own .between(180, ...)),
- * halfTimer is 90, so halfTimer-30 is exactly 60 -- the green condition
- * becomes `timer < 60 && timer > 60`, which no integer can ever satisfy.
- * Green is mathematically unreachable at the default setting, and only
- * gets a vanishingly thin window even one or two timer steps above it,
- * confirmed directly by bytecode comparison against a compiled Create
- * Edition jar showing the identical branch structure.
- *
- * Fix: instead of touching the buggy calculation itself (which would
- * mean retranscribing the whole method, since it's woven through timer
- * countdown, the glow animation, and the reset check), this recomputes
- * `light` correctly after the original tick() has already run, using
- * transition widths clamped to a safe fraction of the half-cycle rather
- * than the fixed 30/60. For any timer length large enough that the
- * clamp never engages (the normal, non-buggy case this session has
- * generally seen with larger timers), this produces the exact same
- * result the original logic already gave -- it only changes behavior
- * for the short timer lengths where the original math was broken.
+ * TFMG's own light-color logic uses fixed transition widths (30/60
+ * ticks) never scaled to the configured timer length -- at the default
+ * 180-tick setting, the green condition becomes mathematically
+ * unreachable (`timer < 60 && timer > 60`). Recomputes `light` after
+ * tick() runs, with transition widths clamped to a safe fraction of the
+ * half-cycle, matching the original result for any timer long enough
+ * that the clamp never engages.
  */
 @Mixin(TrafficLightBlockEntity.class)
 public abstract class TrafficLightGreenPhaseFixMixin {
