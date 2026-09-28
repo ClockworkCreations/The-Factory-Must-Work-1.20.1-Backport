@@ -1,6 +1,6 @@
 package com.tfmgtweaks.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class TFMGTweaksConfig {
 
