@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SurfaceScannerBlockEntityMixinCE {
 
     private static final TagKey<Block> SURFACE_SCANNER_FINDABLE_TAG = TagKey.create(
-            Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("tfmg", "surface_scanner_findable"));
+            Registries.BLOCK, new ResourceLocation("tfmg", "surface_scanner_findable"));
 
     @Inject(method = "hasOil(Lnet/minecraft/world/level/chunk/ChunkAccess;Lnet/minecraft/core/BlockPos;)Z",
             at = @At("TAIL"), cancellable = true)
