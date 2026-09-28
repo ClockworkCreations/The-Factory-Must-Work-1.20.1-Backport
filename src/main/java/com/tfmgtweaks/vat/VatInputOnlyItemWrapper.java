@@ -1,7 +1,7 @@
 package com.tfmgtweaks.vat;
 
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraft.world.item.ItemStack;
 
 /**
