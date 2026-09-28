@@ -22,7 +22,10 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = mod_version
 group = mod_group_id
-base { archivesName = mod_archive_name }
+
+base {
+    archivesName = mod_archive_name
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -35,20 +38,31 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
-            mods { "${mod_id}" { source sourceSets.main } }
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
         }
+
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             arg '-mixin.config=tfmgtweaks.mixins.json'
         }
+
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
             arg '-mixin.config=tfmgtweaks.mixins.json'
             args '--nogui'
         }
+
         gameTestServer {
             property 'forge.enabledGameTestNamespaces', mod_id
         }
+
         data {
             workingDirectory project.file('run-data')
             args '--mod', mod_id, '--all',
@@ -63,22 +77,29 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     maven { url = 'https://maven.createmod.net' }
     maven { url = 'https://maven.blamejared.com' }
-    maven { url = 'https://www.cursemaven.com' }
     maven { url = 'https://maven.tterrag.com' }
+    maven { url = 'https://www.cursemaven.com' }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim")) { transitive = false }
+
+    implementation(fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim")) {
+        transitive = false
+    }
+
     implementation fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
     compileOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}")
     runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
+
+    // Exact TFMG target requested for this backport: 1.0.2f for Minecraft 1.20.1 Forge.
     implementation fg.deobf("curse.maven:create-industry-693815:7344584")
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
 
+    // Optional integrations. These can also be supplied as jars in /libs when needed.
     compileOnly fileTree(dir: 'libs', include: ['sable-companion*.jar'])
     compileOnly fileTree(dir: 'libs', include: ['AdPother*.jar', 'adpother*.jar'])
     compileOnly fileTree(dir: 'libs', include: ['ForgeEndertech*.jar', 'forgeendertech*.jar'])
@@ -95,19 +116,21 @@ mixin {
 
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [
-        minecraft_version: minecraft_version,
-        minecraft_version_range: minecraft_version_range,
-        forge_version: forge_version,
-        forge_version_range: forge_version_range,
-        loader_version_range: loader_version_range,
-        mod_id: mod_id,
-        mod_name: mod_name,
-        mod_license: mod_license,
-        mod_version: mod_version,
-        mod_authors: mod_authors,
-        mod_description: mod_description
+            minecraft_version: minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version,
+            forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            mod_version: mod_version,
+            mod_authors: mod_authors,
+            mod_description: mod_description
     ]
+
     inputs.properties replaceProperties
+
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
@@ -116,16 +139,19 @@ tasks.named('processResources', ProcessResources).configure {
 tasks.named('jar', Jar).configure {
     manifest {
         attributes([
-            'Specification-Title': mod_id,
-            'Specification-Vendor': mod_authors,
-            'Specification-Version': '1',
-            'Implementation-Title': project.name,
-            'Implementation-Version': project.jar.archiveVersion,
-            'Implementation-Vendor': mod_authors,
-            'MixinConfigs': 'tfmgtweaks.mixins.json'
+                'Specification-Title': mod_id,
+                'Specification-Vendor': mod_authors,
+                'Specification-Version': '1',
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor': mod_authors,
+                'MixinConfigs': 'tfmgtweaks.mixins.json'
         ])
     }
+
     finalizedBy 'reobfJar'
 }
 
-tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
