@@ -13,7 +13,7 @@ public class TFMGTweaksBlocks {
             DeferredRegister.create(ForgeRegistries.BLOCKS, TFMGTweaks.MOD_ID);
 
     public static final RegistryObject<OilRockBlock> OIL_ROCK = BLOCKS.register("oil_rock",
-            () -> new OilRockBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+            () -> new OilRockBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
                     .strength(2.5f, 6.0f)
                     .requiresCorrectToolForDrops()));
 }
