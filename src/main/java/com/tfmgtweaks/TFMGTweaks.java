@@ -11,12 +11,12 @@ import com.tfmgtweaks.registry.TFMGTweaksItems;
 import com.tfmgtweaks.worldgen.TFMGTweaksFeatures;
 import com.tfmgtweaks.worldgen.TFMGTweaksPlacementModifiers;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 @Mod(TFMGTweaks.MOD_ID)
@@ -25,7 +25,7 @@ public class TFMGTweaks {
     public static final String MOD_ID = "tfmgtweaks";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TFMGTweaks(IEventBus modEventBus, ModContainer modContainer) {
+    public TFMGTweaks(IEventBus modEventBus) {
         LOGGER.info("Create: The Factory Must WORK initializing");
 
         TFMGTweaksSoundEvents.init();
@@ -42,7 +42,7 @@ public class TFMGTweaks {
         modEventBus.addListener(this::buildCreativeModeTabContents);
         modEventBus.addListener(this::onRegister);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, TFMGTweaksConfig.SPEC);
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TFMGTweaksConfig.SPEC);
     }
 
     private void onRegister(RegisterEvent event) {
