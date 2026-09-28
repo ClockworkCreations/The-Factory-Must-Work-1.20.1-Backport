@@ -8,10 +8,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 
 /**
  * TFMG's own magnetic-alloy-to-magnet lightning conversion has a real
@@ -25,9 +25,9 @@ import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 public class MagneticAlloyLightningFix {
 
     private static final ResourceLocation MAGNETIC_ALLOY_INGOT_ID =
-            ResourceLocation.fromNamespaceAndPath("tfmg", "magnetic_alloy_ingot");
+            new ResourceLocation("tfmg", "magnetic_alloy_ingot");
     private static final ResourceLocation MAGNET_ID =
-            ResourceLocation.fromNamespaceAndPath("tfmg", "magnet");
+            new ResourceLocation("tfmg", "magnet");
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onStruckByLightning(EntityStruckByLightningEvent event) {
