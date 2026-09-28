@@ -78,7 +78,7 @@ public class OilRockBlock extends BaseEntityBlock {
         boolean genuinelyMined = !state.is(newState.getBlock()) && newState.isAir();
         super.onRemove(state, level, pos, newState, isMoving);
         if (genuinelyMined && !level.isClientSide) {
-            Fluid crudeOil = BuiltInRegistries.FLUID.get(ResourceLocation.fromNamespaceAndPath("tfmg", "crude_oil"));
+            Fluid crudeOil = BuiltInRegistries.FLUID.get(new ResourceLocation("tfmg", "crude_oil"));
             Fluid crudeOilSource = crudeOil instanceof FlowingFluid flowingFluid ? flowingFluid.getSource() : crudeOil;
             if (crudeOilSource != null) {
                 level.setBlock(pos, crudeOilSource.defaultFluidState().createLegacyBlock(), 3);
