@@ -7,7 +7,7 @@ import com.tfmgtweaks.config.TFMGTweaksConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SurfaceScannerBlockEntityMixin {
 
     private static final TagKey<Block> SURFACE_SCANNER_FINDABLE_TAG = TagKey.create(
-            Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("tfmg", "surface_scanner_findable"));
+            Registries.BLOCK, new ResourceLocation("tfmg", "surface_scanner_findable"));
 
     @Inject(method = "hasOil", at = @At("HEAD"), cancellable = true)
     private void tfmgtweaks$scanFromSableSubLevel(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
