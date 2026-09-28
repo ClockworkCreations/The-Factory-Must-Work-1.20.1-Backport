@@ -12,7 +12,6 @@ import com.tfmgtweaks.worldgen.TFMGTweaksFeatures;
 import com.tfmgtweaks.worldgen.TFMGTweaksPlacementModifiers;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
