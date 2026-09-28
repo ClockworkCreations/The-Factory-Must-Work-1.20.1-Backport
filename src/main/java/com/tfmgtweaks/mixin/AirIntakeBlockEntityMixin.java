@@ -10,7 +10,6 @@ import com.tfmgtweaks.mixin.accessor.AirIntakeBlockEntityAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -62,8 +61,7 @@ public abstract class AirIntakeBlockEntityMixin {
      * stays as defense-in-depth for saves from before this fix.
      */
     @Inject(method = "read", at = @At("TAIL"), require = 0)
-    private void tfmgtweaks$readController(CompoundTag compound, HolderLookup.Provider registries,
-                                            boolean clientPacket, CallbackInfo ci) {
+    private void tfmgtweaks$readController(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
         if (compound.contains("TfmgtweaksControllerX")) {
             controller = new BlockPos(
                     compound.getInt("TfmgtweaksControllerX"),
@@ -73,8 +71,7 @@ public abstract class AirIntakeBlockEntityMixin {
     }
 
     @Inject(method = "write", at = @At("TAIL"), require = 0)
-    private void tfmgtweaks$writeController(CompoundTag compound, HolderLookup.Provider registries,
-                                             boolean clientPacket, CallbackInfo ci) {
+    private void tfmgtweaks$writeController(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
         if (controller != null) {
             compound.putInt("TfmgtweaksControllerX", controller.getX());
             compound.putInt("TfmgtweaksControllerY", controller.getY());
