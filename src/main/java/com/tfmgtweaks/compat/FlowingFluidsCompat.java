@@ -1,6 +1,6 @@
 package com.tfmgtweaks.compat;
 
-import net.neoforged.fml.loading.LoadingModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * The only place in this mod allowed to know Flowing Fluids' modid by
@@ -11,7 +11,7 @@ import net.neoforged.fml.loading.LoadingModList;
  */
 public final class FlowingFluidsCompat {
 
-    private static final boolean LOADED = LoadingModList.get().getModFileById("flowing_fluids") != null;
+    private static final boolean LOADED = ModList.get().isLoaded("flowing_fluids");
 
     private FlowingFluidsCompat() {
     }
