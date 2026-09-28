@@ -11,16 +11,16 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraftforge.fluids.BaseFlowingFluid;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class TFMGTweaksFluids {
 
     public static final DeferredRegister<FluidType> FLUID_TYPES =
-            DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, TFMGTweaks.MOD_ID);
+            DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, TFMGTweaks.MOD_ID);
 
     public static final DeferredRegister<Fluid> FLUIDS =
             DeferredRegister.create(Registries.FLUID, TFMGTweaks.MOD_ID);
@@ -29,7 +29,7 @@ public class TFMGTweaksFluids {
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(Registries.BLOCK, TFMGTweaks.MOD_ID);
 
-    public static final DeferredHolder<FluidType, FluidType> STEAM_TYPE = FLUID_TYPES.register("steam",
+    public static final RegistryObject<FluidType> STEAM_TYPE = FLUID_TYPES.register("steam",
             () -> new SteamFluidType(FluidType.Properties.create()
                     .descriptionId("fluid.tfmgtweaks.steam")
                     .canSwim(false)
@@ -43,10 +43,10 @@ public class TFMGTweaksFluids {
                     .lightLevel(0)
                     .temperature(400)));
 
-    public static final DeferredHolder<Fluid, SteamFluid> STEAM_SOURCE =
+    public static final RegistryObject<SteamFluid> STEAM_SOURCE =
             FLUIDS.register("steam", () -> SteamFluid.createSource(steamProperties()));
 
-    public static final DeferredHolder<Fluid, SteamFluid> STEAM_FLOWING =
+    public static final RegistryObject<SteamFluid> STEAM_FLOWING =
             FLUIDS.register("flowing_steam", () -> SteamFluid.createFlowing(steamProperties()));
 
     private static BaseFlowingFluid.Properties steamProperties() {
@@ -60,7 +60,7 @@ public class TFMGTweaksFluids {
      * the world. Has a bucket for scooping up existing burning fuel
      * (like a lava bucket), not for creating it from scratch.
      */
-    public static final DeferredHolder<FluidType, FluidType> BURNING_FUEL_TYPE = FLUID_TYPES.register("burning_fuel",
+    public static final RegistryObject<FluidType> BURNING_FUEL_TYPE = FLUID_TYPES.register("burning_fuel",
             () -> new BurningFuelFluidType(FluidType.Properties.create()
                     .descriptionId("fluid.tfmgtweaks.burning_fuel")
                     .canSwim(false)
@@ -70,10 +70,10 @@ public class TFMGTweaksFluids {
                     .viscosity(3000)
                     .temperature(1500)));
 
-    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> BURNING_FUEL_SOURCE =
+    public static final RegistryObject<BaseFlowingFluid.Source> BURNING_FUEL_SOURCE =
             FLUIDS.register("burning_fuel", () -> new BaseFlowingFluid.Source(burningFuelProperties()));
 
-    public static final DeferredHolder<Fluid, BurningFuelFlowingFluid> BURNING_FUEL_FLOWING =
+    public static final RegistryObject<BurningFuelFlowingFluid> BURNING_FUEL_FLOWING =
             FLUIDS.register("flowing_burning_fuel", () -> new BurningFuelFlowingFluid(burningFuelProperties()));
 
     /**
@@ -84,7 +84,7 @@ public class TFMGTweaksFluids {
      * BurningFuelFluidType's lightLevel(15), which LiquidBlock already
      * delegates to.
      */
-    public static final DeferredHolder<Block, BurningFuelBlock> BURNING_FUEL_BLOCK = BLOCKS.register("burning_fuel",
+    public static final RegistryObject<BurningFuelBlock> BURNING_FUEL_BLOCK = BLOCKS.register("burning_fuel",
             () -> new BurningFuelBlock(BURNING_FUEL_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA)));
 
     /**
