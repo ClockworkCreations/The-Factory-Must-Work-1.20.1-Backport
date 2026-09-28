@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.minecraftforge.fluids.BaseFlowingFluid;
 
 /** Burning fuel is placed via markBurning(); see it and FluidIgnition for the full lifecycle. */
 public class BurningFuelFlowingFluid extends BaseFlowingFluid.Flowing {
