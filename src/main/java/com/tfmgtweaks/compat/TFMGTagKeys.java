@@ -21,9 +21,9 @@ public final class TFMGTagKeys {
 
     /** tfmg:surface_scanner_findable -- vanilla enum entry: TFMGBlockTags.SURFACE_SCANNER_FINDABLE / CE: Blocks.SURFACE_SCANNER_FINDABLE */
     public static final TagKey<Block> SURFACE_SCANNER_FINDABLE = TagKey.create(
-            Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("tfmg", "surface_scanner_findable"));
+            Registries.BLOCK, new ResourceLocation("tfmg", "surface_scanner_findable"));
 
     /** tfmg:flammable -- vanilla enum entry: TFMGFluidTags.FLAMMABLE / CE: Fluids.FLAMMABLE */
     public static final TagKey<Fluid> FLAMMABLE_FLUID = TagKey.create(
-            Registries.FLUID, ResourceLocation.fromNamespaceAndPath("tfmg", "flammable"));
+            Registries.FLUID, new ResourceLocation("tfmg", "flammable"));
 }
