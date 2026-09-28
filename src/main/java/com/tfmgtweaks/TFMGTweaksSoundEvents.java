@@ -24,7 +24,7 @@ public class TFMGTweaksSoundEvents {
     }
 
     private static TFMGSoundEvents.SoundEntry register(String path, String subtitle) {
-        TFMGSoundEvents.SoundEntry entry = TFMGSoundEvents.create(ResourceLocation.fromNamespaceAndPath("tfmg", path))
+        TFMGSoundEvents.SoundEntry entry = TFMGSoundEvents.create(new ResourceLocation("tfmg", path))
                 .subtitle(subtitle)
                 .category(SoundSource.BLOCKS)
                 .attenuationDistance(16)
