@@ -34,7 +34,7 @@ public class TFMGTweaksSimpleTrigger implements CriterionTrigger<TFMGTweaksSimpl
     private final Map<PlayerAdvancements, Set<Listener<Instance>>> listeners = Maps.newHashMap();
 
     public TFMGTweaksSimpleTrigger(String id) {
-        this.id = ResourceLocation.fromNamespaceAndPath(TFMGTweaks.MOD_ID, id);
+        this.id = new ResourceLocation(TFMGTweaks.MOD_ID, id);
     }
 
     public ResourceLocation getId() {
