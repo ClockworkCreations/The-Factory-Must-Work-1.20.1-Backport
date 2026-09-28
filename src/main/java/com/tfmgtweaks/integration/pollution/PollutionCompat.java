@@ -2,7 +2,7 @@ package com.tfmgtweaks.integration.pollution;
 
 import java.util.function.Supplier;
 
-import net.neoforged.fml.loading.LoadingModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * The only place in this mod allowed to know Pollution of the Realms'
@@ -14,7 +14,7 @@ import net.neoforged.fml.loading.LoadingModList;
  */
 public final class PollutionCompat {
 
-    private static final boolean LOADED = LoadingModList.get().getModFileById("adpother") != null;
+    private static final boolean LOADED = ModList.get().isLoaded("adpother");
 
     private PollutionCompat() {
     }
