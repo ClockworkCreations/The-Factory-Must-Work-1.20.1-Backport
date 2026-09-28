@@ -17,7 +17,7 @@ public class TFMGTweaksClient {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         BlockEntityType<PumpjackBaseBlockEntity> pumpjackType = (BlockEntityType<PumpjackBaseBlockEntity>)
-                BuiltInRegistries.BLOCK_ENTITY_TYPE.get(ResourceLocation.fromNamespaceAndPath("tfmg", "pumpjack_base"));
+                BuiltInRegistries.BLOCK_ENTITY_TYPE.get(new ResourceLocation("tfmg", "pumpjack_base"));
         event.registerBlockEntityRenderer(pumpjackType, PumpjackFaceIconRenderer::new);
     }
 }
