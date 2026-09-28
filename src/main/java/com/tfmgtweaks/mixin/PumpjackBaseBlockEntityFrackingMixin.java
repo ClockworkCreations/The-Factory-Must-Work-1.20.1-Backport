@@ -7,7 +7,6 @@ import com.tfmgtweaks.pumpjack.PumpjackFrackingWrapper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -148,8 +147,7 @@ public abstract class PumpjackBaseBlockEntityFrackingMixin implements ITFMGTweak
     }
 
     @Inject(method = "write", at = @At("HEAD"))
-    private void tfmgtweaks$writeFrackingState(CompoundTag compound, HolderLookup.Provider registries,
-                                                boolean clientPacket, CallbackInfo ci) {
+    private void tfmgtweaks$writeFrackingState(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
         if (tfmgtweaks$frackingCore != null) {
             compound.putInt("TFMGTweaksWasteWater", tfmgtweaks$frackingCore.wasteAmount);
             compound.putInt("TFMGTweaksSteam", tfmgtweaks$frackingCore.steamAmount);
@@ -163,8 +161,7 @@ public abstract class PumpjackBaseBlockEntityFrackingMixin implements ITFMGTweak
     }
 
     @Inject(method = "read", at = @At("TAIL"))
-    private void tfmgtweaks$readFrackingState(CompoundTag compound, HolderLookup.Provider registries,
-                                               boolean clientPacket, CallbackInfo ci) {
+    private void tfmgtweaks$readFrackingState(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
         if (tfmgtweaks$frackingCore != null) {
             tfmgtweaks$frackingCore.wasteAmount = compound.getInt("TFMGTweaksWasteWater");
             tfmgtweaks$frackingCore.steamAmount = compound.getInt("TFMGTweaksSteam");
