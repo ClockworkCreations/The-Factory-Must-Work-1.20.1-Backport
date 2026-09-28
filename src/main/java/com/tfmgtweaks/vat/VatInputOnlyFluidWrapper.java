@@ -1,8 +1,8 @@
 package com.tfmgtweaks.vat;
 
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /**
  * Same idea as VatInputOnlyItemWrapper but for fluids (see
