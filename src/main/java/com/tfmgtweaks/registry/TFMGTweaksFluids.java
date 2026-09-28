@@ -85,7 +85,7 @@ public class TFMGTweaksFluids {
      * delegates to.
      */
     public static final RegistryObject<BurningFuelBlock> BURNING_FUEL_BLOCK = BLOCKS.register("burning_fuel",
-            () -> new BurningFuelBlock(BURNING_FUEL_SOURCE.get(), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA)));
+            () -> new BurningFuelBlock(BURNING_FUEL_SOURCE.get(), BlockBehaviour.Properties.copy(Blocks.LAVA)));
 
     /**
      * slopeFindDistance/explosionResistance are missing here relative to
